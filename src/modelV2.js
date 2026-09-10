@@ -12,10 +12,10 @@
 //  5. Monte-Carlo over coefficient uncertainty → P10–P90 bands, not point outputs.
 // The coefficients are still reasoned priors, not calibrated values.
 
-import { presets, sliderDefs } from './model.js'
-export { presets, sliderDefs }
+import { presets, sliderDefs, impliedGrowth, BASELINE_G } from './model.js'
+export { presets, sliderDefs, impliedGrowth, BASELINE_G }
 
-export const GDP_BASE = 5.30      // $tn no-AI 2030 baseline
+export const GDP_BASE = 5.44      // $tn no-AI 2030 baseline (~7% real trend from $4.15T 2026)
 export const EXPORT_BASE = 224    // $bn services exports, FY25
 export const STOCK = 5.8          // mn existing formal-tech workers
 export const FRESH_POOL = 1.5     // mn potential new entrants, 2026–2030

@@ -5,7 +5,14 @@
 // the two India-controlled levers (domesticDiffusion, valueCapture) are the only
 // source of large GDP upside and the only youth-relief term.
 
-export const GDP_BASE = 5.30; // $tn, no-AI 2030 baseline (≈$4.15T 2026 grown ~6.5%/yr)
+export const GDP_BASE = 5.44; // $tn, no-AI 2030 baseline: $4.15T (2026) compounded at the ~7% real trend
+export const BASELINE_G = 0.07; // India's ~7% real steady-state growth (the no-AI counterfactual)
+export const HORIZON = 4;       // 2026 → 2030
+// AI-inclusive average real growth implied by an AI uplift over the no-AI path.
+// This is the number to show as the headline — the uplift is NOT a growth rate.
+export function impliedGrowth(upliftPct, g = BASELINE_G, years = HORIZON) {
+  return Math.pow(Math.pow(1 + g, years) * (1 + upliftPct / 100), 1 / years) - 1
+}
 
 export const presets = {
   modest:      { cap: 25, adopt: 30, auto: 20, diff: 20, capture: 35, fric: 65 },

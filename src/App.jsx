@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useEffect } from 'react'
-import { presets, sliderDefs, tiers, compute, verdict, GDP_BASE } from './model.js'
+import { presets, sliderDefs, tiers, compute, verdict, GDP_BASE, impliedGrowth } from './model.js'
 import ModelV2 from './ModelV2.jsx'
 
 const fmtPct = (x) => (x >= 0 ? '+' : '') + x.toFixed(1) + '%'
@@ -265,9 +265,9 @@ function Explorer() {
 
           <div>
             <div className="results">
-              <ResultCard label="GDP in 2030 vs a no-AI path"
-                value={fmtPct(r.gdpUplift)} cls={r.gdpUplift >= 0 ? 'up' : 'down'}
-                sub={`\u2248 $${r.gdp2030.toFixed(2)}T in 2030 (base $${GDP_BASE.toFixed(2)}T). Most of any large gain is domestic, not export.`} />
+              <ResultCard label="India's growth path to 2030 (real, AI-inclusive)"
+                value={`≈${(impliedGrowth(r.gdpUplift) * 100).toFixed(1)}%`} cls={r.gdpUplift >= 0 ? 'up' : 'down'}
+                sub={`avg growth vs ~7% no-AI baseline · $${r.gdp2030.toFixed(2)}T level · AI adds ${fmtPct(r.gdpUplift)} to the level, not the rate.`} />
               <ResultCard label="Formal tech employment (5.8M base)"
                 value={fmtPct(r.empChange)} cls={r.empChange >= 0 ? 'up' : 'down'}
                 sub={`\u2248 ${r.jobsGone.toFixed(1)}M fewer formal-tech roles vs today — displaced or, mostly, never hired.`} />
@@ -447,7 +447,8 @@ function Assumptions() {
           <summary>Baseline &amp; anchor facts (2025–26)</summary>
           <div className="inner">
             <table><tbody>
-              <tr><td>GDP (2026, nominal)</td><td>~$4.15T; ~6.5% real growth → no-AI 2030 baseline &asymp; $5.30T (2026 prices). <span className="srcnote">IMF / NSO.</span></td></tr>
+              <tr><td>GDP baseline (no-AI)</td><td>~$4.15T (2026), compounded at India&rsquo;s ~7% real trend &rarr; no-AI 2030 baseline &asymp; $5.44T (2026 prices). <span className="srcnote">IMF / NSO (real trend ~6.5–7%).</span></td></tr>
+              <tr><td>How to read the GDP output</td><td>The headline is the <b>AI-inclusive average real growth rate</b> to 2030. The &ldquo;+X%&rdquo; is AI-attributable uplift <b>to the 2030 level</b> vs the no-AI path — it is <b>not</b> a growth rate. Every non-pathological scenario sits <em>above</em> the ~7% baseline; only a near-total IT/BPO wipeout with no domestic offset trims it toward ~6.5%.</td></tr>
               <tr><td>Exposed formal-tech sector</td><td>~5.8M direct employees; ~$283B revenue; ~$224B exports (FY25). &asymp;1% of workforce, &asymp;7% of GDP. <span className="srcnote">NASSCOM Strategic Review 2025.</span></td></tr>
               <tr><td>Workforce structure</td><td>~590M workers; agriculture ~45%; informal ~82% of workers; firms &gt;20 staff ~14.5%. <span className="srcnote">PLFS 2023–24; SBI Research.</span></td></tr>
               <tr><td>Export destination</td><td>US &asymp; 53% of software-services exports. <span className="srcnote">MeitY / NASSCOM.</span></td></tr>

@@ -1,5 +1,5 @@
 import React, { useState, useMemo } from 'react'
-import { computeV2, sensitivity, monteCarlo, verdictV2, presets, sliderDefs, ranges, STOCK } from './modelV2.js'
+import { computeV2, sensitivity, monteCarlo, verdictV2, presets, sliderDefs, ranges, STOCK, impliedGrowth } from './modelV2.js'
 
 const f = (x, d = 1) => (x >= 0 ? '+' : '') + x.toFixed(d)
 
@@ -75,19 +75,20 @@ function Tornado({ vals }) {
 
 function Band({ vals }) {
   const mc = useMemo(() => monteCarlo(vals), [vals])
-  const lo = -6, hi = 26 // display scale in %
-  const pos = (x) => ((x - lo) / (hi - lo) * 100)
-  const clampPos = (x) => Math.max(0, Math.min(100, pos(x)))
+  const g = (u) => impliedGrowth(u) * 100
+  const lo = -6, hi = 26 // display scale for the uplift bar
+  const clampPos = (x) => Math.max(0, Math.min(100, (x - lo) / (hi - lo) * 100))
   return (
     <div className="rcard full">
-      <div className="rl">GDP uplift — central estimate with P10–P90 uncertainty band</div>
-      <div className="rn" style={{ marginBottom: '10px' }}>{f(mc.p50)}<small style={{ fontSize: '15px', color: '#a5a196' }}> central</small></div>
+      <div className="rl">India&rsquo;s growth path to 2030 (real, AI-inclusive) — central with P10–P90</div>
+      <div className="rn" style={{ marginBottom: '4px' }}>≈{g(mc.p50).toFixed(1)}%<small style={{ fontSize: '15px', color: '#a5a196' }}> avg growth vs ~7% baseline</small></div>
+      <div className="rsub" style={{ marginBottom: '10px' }}>band ≈{g(mc.p10).toFixed(1)}–{g(mc.p90).toFixed(1)}% growth. Bar below = AI uplift to the 2030 <em>level</em>, not the rate.</div>
       <div className="bandtrack">
         <div className="bandspan" style={{ left: clampPos(mc.p10) + '%', width: (clampPos(mc.p90) - clampPos(mc.p10)) + '%' }} />
         <div className="bandtick" style={{ left: clampPos(mc.p50) + '%' }} />
         <div className="bandzero" style={{ left: clampPos(0) + '%' }} />
       </div>
-      <div className="rsub">P10 {f(mc.p10)}% · P50 {f(mc.p50)}% · P90 {f(mc.p90)}% — over ~2,000 draws of the uncertain coefficients. The width <em>is</em> the honesty.</div>
+      <div className="rsub">AI uplift P10 {f(mc.p10)}% · P50 {f(mc.p50)}% · P90 {f(mc.p90)}% over ~2,000 coefficient draws. The width <em>is</em> the honesty.</div>
     </div>
   )
 }
