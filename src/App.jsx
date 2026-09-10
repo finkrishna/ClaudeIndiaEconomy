@@ -1,5 +1,6 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState, useMemo, useEffect } from 'react'
 import { presets, sliderDefs, tiers, compute, verdict, GDP_BASE } from './model.js'
+import ModelV2 from './ModelV2.jsx'
 
 const fmtPct = (x) => (x >= 0 ? '+' : '') + x.toFixed(1) + '%'
 const fmtPct0 = (x) => (x >= 0 ? '+' : '') + x.toFixed(0) + '%'
@@ -531,7 +532,37 @@ function SiteFooter() {
   )
 }
 
-export default function App() {
+function TopNav({ page }) {
+  return (
+    <nav className="topnav">
+      <div className="wrap navwrap">
+        <a href="#/" className="brand">India&nbsp;&amp;&nbsp;AI · 2030</a>
+        <div className="navlinks">
+          <a href="#/" className={page === 'home' ? 'on' : ''}>Explorer</a>
+          <a href="#/v2" className={page === 'v2' ? 'on' : ''}>Methodology &amp; v2</a>
+        </div>
+      </div>
+    </nav>
+  )
+}
+
+function CTAtoV2() {
+  return (
+    <section className="tint ctaband">
+      <div className="wrap">
+        <div className="eyebrow">Keep going</div>
+        <h2 style={{ maxWidth: '26ch' }}>Is the model any good? Read the critique — and the improved version.</h2>
+        <p className="read">Every model this simple has faults. The next page sets out six of them plainly, then rebuilds
+          the model to fix what can be fixed: exports coupled into GDP, job losses split into displaced vs never-hired,
+          a realistic-range sensitivity analysis that answers &ldquo;which dial matters most,&rdquo; and Monte-Carlo
+          uncertainty bands instead of false-precision numbers.</p>
+        <p style={{ marginTop: '18px' }}><a href="#/v2" style={{ fontSize: '17px' }}>Methodology critique &amp; the v2 model →</a></p>
+      </div>
+    </section>
+  )
+}
+
+function Landing() {
   return (
     <>
       <Hero />
@@ -543,8 +574,30 @@ export default function App() {
       <Explorer />
       <Findings />
       <Conclusion />
+      <CTAtoV2 />
       <Assumptions />
       <SiteFooter />
+    </>
+  )
+}
+
+function useHashRoute() {
+  const [hash, setHash] = useState(typeof window !== 'undefined' ? window.location.hash : '')
+  useEffect(() => {
+    const onChange = () => { setHash(window.location.hash); window.scrollTo(0, 0) }
+    window.addEventListener('hashchange', onChange)
+    return () => window.removeEventListener('hashchange', onChange)
+  }, [])
+  return hash
+}
+
+export default function App() {
+  const hash = useHashRoute()
+  const page = hash.startsWith('#/v2') ? 'v2' : 'home'
+  return (
+    <>
+      <TopNav page={page} />
+      {page === 'v2' ? <ModelV2 /> : <Landing />}
     </>
   )
 }
